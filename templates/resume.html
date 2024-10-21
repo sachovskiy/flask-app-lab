@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section id="about" class="mt-5">
+    <h2>Про себе</h2>
+    <p>Тут розкажіть про себе, ваші інтереси та цілі.</p>
+</section>
+
+<section id="education" class="mt-5">
+    <h2>Освіта</h2>
+    <p>Опишіть вашу освіту, включаючи університети, курси тощо.</p>
+</section>
+
+<section id="skills" class="mt-5">
+    <h2>Навички</h2>
+    <p>Перерахуйте ваші професійні навички, як наприклад: Python, Flask, Git, та інше.</p>
+</section>
+
+<section id="experience" class="mt-5">
+    <h2>Досвід роботи</h2>
+    <p>Опис проектів або робочого досвіду. Можете включити скріншоти проектів.</p>
+    <img src="{{ url_for('static', filename='images/my.jpg') }}" alt="Project Image" class="img-fluid">
+</section>
+{% endblock %}
