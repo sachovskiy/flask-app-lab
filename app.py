@@ -1,15 +1,10 @@
-from flask import Flask
+from flask import Flask, render_template
+
 app = Flask(__name__)
 
 @app.route('/')
-def main():
-    return 'Hello, worldd'
+def resume():
+    return render_template('resume.html', title='Резюме')
 
-@app.route('/homepage')
-def home():
-    """View for the Home page of your website."""
-    return f"This is your homepage :) "
-
-
-if  __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)
