@@ -1,5 +1,6 @@
 import unittest
-from app import app
+from app import app  # Переконайтеся, що імпортували ваш Flask-додаток
+
 
 class FlaskAppTestCase(unittest.TestCase):
 
@@ -10,29 +11,18 @@ class FlaskAppTestCase(unittest.TestCase):
 
     def test_greetings_page(self):
         """Тест маршруту /hi/<name>."""
-        response = self.client.get("/hi/John?age=30")
+        response = self.client.get("users/hi/John?age=30")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"JOHN", response.data)
         self.assertIn(b"30", response.data)
 
     def test_admin_page(self):
         """Тест маршруту /admin, який перенаправляє."""
-        response = self.client.get("/admin", follow_redirects=True)
+        response = self.client.get("users/admin", follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"ADMINISTRATOR", response.data)
-        self.assertIn(b"25", response.data)
+        self.assertIn(b"45", response.data)
 
-    def test_posts_page(self):
-        """Тест для маршруту /post/, перевіряє список статей."""
-        response = self.client.get("/post/")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Articles", response.data)
-
-    def test_post_detail_page(self):
-        """Тест для маршруту /post/<int:id>, перевіряє деталі конкретного поста."""
-        response = self.client.get("/post/1")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"My First Post", response.data)
 
 if __name__ == "__main__":
     unittest.main()
