@@ -13,6 +13,15 @@
             <h1>Flask Application</h1>
         </div>
     </header>
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} mt-3">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
     {% with msg = get_flashed_messages(with_categories=True) %}
     <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->

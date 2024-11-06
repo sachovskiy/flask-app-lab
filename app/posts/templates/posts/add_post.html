@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Add POST{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Додати новий пост</h2>
+
+        <form action="" method="post" novalidate class="shadow-sm p-4 rounded bg-light">
+            {{ form.hidden_tag() }}
+
+            {% from 'form_macros.html' import render_field %}
+            {{ render_field(form.title) }}
+            {{ render_field(form.content) }}
+            {{ render_field(form.is_active) }}
+            {{ render_field(form.publish_date) }}
+            {{ render_field(form.category) }}
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary btn-block") }}
+            </div>
+        </form>
+
+        <div class="mt-4">
+            <a href="{{ url_for("posts.get_posts") }}" class="btn btn-secondary">Повернутися до постів</a>
+        </div>
+    </div>
+{% endblock %}
