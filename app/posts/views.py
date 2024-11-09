@@ -3,6 +3,15 @@ from . import post_bp
 from flask import render_template, abort, flash, redirect, url_for
 from .forms import PostForm
 from datetime import datetime
+import os
+from flask import current_app
+from werkzeug.utils import secure_filename
+
+def save_image(form_image):
+    filename = secure_filename(form_image.filename)
+    image_path = os.path.join(current_app.root_path, 'static/images', filename)
+    form_image.save(image_path)
+    return filename
 
 POSTS_FILE = 'app/posts/posts.json'
 
@@ -24,6 +33,7 @@ def save_post(post):
 def add_post():
     form = PostForm()
     if form.validate_on_submit():
+        author = form.author.data if form.author.data else "Анонім"
         post = {
             "id": datetime.now().strftime('%Y%m%d%H%M%S'),
             "title": form.title.data,
@@ -31,11 +41,11 @@ def add_post():
             "category": form.category.data,
             "is_active": form.is_active.data,
             "publish_date": form.publish_date.data.strftime('%Y-%m-%d'),
-            "author": "Alex_Sachovskiy"
+            "author": author
         }
 
         save_post(post)
-        flash(f'Post "{form.title.data}" added successfully!', 'success')
+        flash(f'Пост "{form.title.data}" додано успішно!', 'success')
         return redirect(url_for('.get_posts'))
 
     return render_template("add_post.html", form=form)

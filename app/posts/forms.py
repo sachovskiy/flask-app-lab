@@ -10,4 +10,5 @@ class PostForm(FlaskForm):
     is_active = BooleanField('Активний пост')
     publish_date = DateField('Дата публікації', format='%Y-%m-%d', validators=[DataRequired()])
     category = SelectField('Категорія', choices=CATEGORIES, validators=[DataRequired()])
+    author = StringField("Автор")
     submit = SubmitField("Додати пост")
