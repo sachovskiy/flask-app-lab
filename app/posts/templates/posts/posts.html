@@ -3,15 +3,20 @@
 {% block title %}Пости{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
-
+<h1 class="myclass">Articles</h1>
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('.static', filename='css/posts.css') }}">
+{% endblock %}
 <div class="container mt-5">
+    <form action="{{ url_for('.add_post') }}" class="mb-4">
+        <button type="submit" class="btn btn-primary">Add post</button>
+    </form>
     <div class="row">
         {% for post in posts %}
             <div class="col-md-6 col-lg-4 mt-5">
                 <div class="blog-grid">
                     <div class="blog-grid-img position-relative">
-                        <img src="{{ url_for('static', filename='image/new-post1.png') }}" alt="Фото профілю" class="rounded-circle">
+                        <img src="{{ url_for('static', filename='images/new-post1.png') }}" alt="Фото профілю" class="rounded-circle">
 
                     </div>
                     <div class="blog-grid-text p-4">
