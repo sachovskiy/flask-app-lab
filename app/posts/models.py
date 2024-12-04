@@ -1,0 +1,17 @@
+from app import db
+from datetime import datetime as dt
+
+class Post(db.Model):
+    tablename = 'posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=True)
+    posted = db.Column(db.DateTime, default=dt.now())
+    is_active = db.Column(db.Boolean, default=True)
+    category = db.Column(db.String(50), nullable=True)
+
+    author = db.Column(db.String(100), nullable=True)
+
+    def repr(self):
+        return f"<Post(title={self.title}, is_active={self.is_active}, category={self.category}, author={self.author})>"

@@ -17,7 +17,6 @@
                 <div class="blog-grid">
                     <div class="blog-grid-img position-relative">
                         <img src="{{ url_for('static', filename='images/new-post1.png') }}" alt="Фото профілю" class="rounded-circle">
-
                     </div>
                     <div class="blog-grid-text p-4">
                         <h3 class="h5 mb-3">
@@ -26,11 +25,16 @@
                         <p class="display-30">{{ post['content'][:100] }}...</p>
                         <div class="meta meta-style2">
                             <ul>
-                                <li><a href="#!"><i class="fas fa-calendar-alt"></i> {{ post['publish_date'] }}</a></li>
+                                <li><a href="#!"><i class="fas fa-calendar-alt"></i> {{ post.posted.strftime('%Y-%m-%d %H:%M') }}</a></li>
                                 <li><a href="#!"><i class="fas fa-user"></i> {{ post['author'] }}</a></li>
                                 <li><a href="#!"><i class="fas fa-comments"></i> 0</a></li>
                             </ul>
                         </div>
+                        <a href="{{ url_for('posts.edit_post', id=post.id) }}" class="btn btn-warning mt-2">Edit</a>
+
+                        <form action="{{ url_for('posts.delete_post', id=post['id']) }}" method="POST">
+                            <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -51,7 +55,9 @@
         </div>
     </div>
 </div>
-<style>body {
+
+<style>
+body {
     margin-top: 20px;
 }
 

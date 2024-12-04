@@ -1,14 +1,17 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, DateField, SelectField, SubmitField
+from wtforms import StringField, TextAreaField, BooleanField, DateTimeLocalField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-CATEGORIES = [('технології', 'Технології'), ('наука', 'Наука'), ('спосіб життя', 'Спосіб життя')]
+CATEGORIES = [('education', 'Education'), ('travel', 'Travel'), ('health', 'Health')]
+
 
 class PostForm(FlaskForm):
-    title = StringField("Назва", validators=[DataRequired(), Length(min=2)])
-    content = TextAreaField("Зміст", render_kw={"rows": 5, "cols": 40}, validators=[DataRequired()])
-    is_active = BooleanField('Активний пост')
-    publish_date = DateField('Дата публікації', format='%Y-%m-%d', validators=[DataRequired()])
-    category = SelectField('Категорія', choices=CATEGORIES, validators=[DataRequired()])
-    author = StringField("Автор")
-    submit = SubmitField("Додати пост")
+    title = StringField("Title", validators=[DataRequired(), Length(min=2)])
+    content = TextAreaField("Content", render_kw={"rows": 5, "cols": 40}, validators=[DataRequired()])
+    is_active = BooleanField('Active Post')
+    publish_date = DateTimeLocalField('Publish Date', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired()])
+
+    author = StringField("Author", validators=[Length(max=100)])
+
+    submit = SubmitField("Add Post")

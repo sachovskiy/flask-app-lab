@@ -1,82 +1,96 @@
-import json
 from . import post_bp
-from flask import render_template, abort, flash, redirect, url_for
+from flask import render_template, request, abort, flash, redirect, url_for
 from .forms import PostForm
-from datetime import datetime
-import os
-from flask import current_app
-from werkzeug.utils import secure_filename
-
-def save_image(form_image):
-    filename = secure_filename(form_image.filename)
-    image_path = os.path.join(current_app.root_path, 'static/images', filename)
-    form_image.save(image_path)
-    return filename
-
-POSTS_FILE = 'app/posts/posts.json'
-
-
-def save_post(post):
-    try:
-        with open(POSTS_FILE, 'r') as f:
-            posts = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        posts = []
-
-    posts.append(post)
-
-    with open(POSTS_FILE, 'w') as f:
-        json.dump(posts, f, indent=4)
+from .models import Post
+from app import db
 
 
 @post_bp.route('/add_post', methods=['GET', 'POST'])
 def add_post():
     form = PostForm()
     if form.validate_on_submit():
-        author = form.author.data if form.author.data else "Анонім"
-        post = {
-            "id": datetime.now().strftime('%Y%m%d%H%M%S'),
-            "title": form.title.data,
-            "content": form.content.data,
-            "category": form.category.data,
-            "is_active": form.is_active.data,
-            "publish_date": form.publish_date.data.strftime('%Y-%m-%d'),
-            "author": author
-        }
+        title = form.title.data
+        content = form.content.data
+        category = form.category.data
+        author = form.author.data
+        is_active = form.is_active.data
+        publish_date = form.publish_date.data
 
-        save_post(post)
-        flash(f'Пост "{form.title.data}" додано успішно!', 'success')
+        post_new = Post(
+            title=title,
+            content=content,
+            category=category,
+            author=author,
+            is_active=is_active,
+            posted=publish_date
+        )
+
+        db.session.add(post_new)
+        db.session.commit()
+
+        flash(f'Post "{title}" added successfully!', 'success')
+
         return redirect(url_for('.get_posts'))
+
+    elif form.errors:
+        flash(f"Enter the correct data in the form!", "danger")
 
     return render_template("add_post.html", form=form)
 
+@post_bp.route('/delete_post/<int:id>', methods=['GET', 'POST'])
+def delete_post(id):
+    post = Post.query.get(id)
 
-@post_bp.route('/posts')
+    if post:
+        db.session.delete(post)
+        db.session.commit()
+
+        flash(f'Post "{post.title}" deleted successfully!', 'success')
+    else:
+
+        flash('Post not found!', 'danger')
+
+    return redirect(url_for('posts.get_posts'))
+
+
+
+@post_bp.route('/')
 def get_posts():
-    try:
-        with open(POSTS_FILE, 'r') as f:
-            posts = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        posts = []
-
+    stmt = db.select(Post).order_by(
+        Post.posted.desc())
+    posts = db.session.scalars(stmt).all()
     return render_template("posts.html", posts=posts)
 
 
-@post_bp.route('/posts/<int:id>')
+@post_bp.route('/<int:id>')
 def detail_post(id):
-    try:
-        with open(POSTS_FILE, 'r') as f:
-            posts = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        abort(404)
-
-    post = next((post for post in posts if int(post["id"]) == id), None)
-    if post is None:
-        abort(404)
-
-    return render_template("detail_post.html", post=post)
+    post = Post.query.get(id)
+    if post:
+        return render_template('detail_post.html', post=post)
+    return abort(404)
 
 
-@post_bp.app_errorhandler(404)
-def page_not_found(error):
-    return render_template('404.html'), 404
+@post_bp.route('/edit_post/<int:id>', methods=['GET', 'POST'])
+def edit_post(id):
+    post = Post.query.get(id)
+    if not post:
+        flash('Post not found!', 'danger')
+        return redirect(url_for('.get_posts'))
+
+    form = PostForm(obj=post)
+
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        post.category = form.category.data
+        post.author = form.author.data
+        post.is_active = form.is_active.data
+        post.posted = form.publish_date.data
+
+        db.session.commit()
+
+        flash(f'Post "{post.title}" updated successfully!', 'success')
+
+        return redirect(url_for('.detail_post', id=post.id))
+
+    return render_template('edit_post.html', form=form, post=post)
